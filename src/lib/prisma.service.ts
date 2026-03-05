@@ -1,7 +1,7 @@
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from 'generated/prisma/client';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -10,7 +10,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor(private configService: ConfigService) {
     const databaseUrl = configService.get<string>('DATABASE_URL');
     const isDevelopment = process.env.NODE_ENV !== 'production';
-    
+
     if (!databaseUrl) {
       throw new Error('DATABASE_URL não está definida no arquivo .env');
     }
@@ -18,11 +18,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     const adapter = new PrismaPg({
       connectionString: databaseUrl,
     });
-    
+
     // Configura logs apenas em desenvolvimento
     super({
       adapter,
-      log: isDevelopment 
+      log: isDevelopment
         ? ['query', 'info', 'warn', 'error']
         : ['error'], // Em produção, apenas erros
     });
