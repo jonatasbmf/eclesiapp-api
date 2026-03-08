@@ -30,9 +30,33 @@ Api do sistema eclesiástico
 
 ## Project setup
 
+1. **Install Dependencies**
 ```bash
 $ npm install
 ```
+
+2. **Environment Variables**
+Copy the example environment file and configure your database connection and JWT secrets:
+```bash
+$ cp .env.example .env
+```
+*(Ensure `DATABASE_URL` is pointing to your active PostgreSQL instance).*
+
+3. **Database Setup & Prisma**
+Apply the schemas to your database and generate the client:
+```bash
+$ npx prisma db push
+$ npx prisma generate
+```
+
+4. **Seed the Database (Sysadmin User)**
+To log into the system for the first time, you must seed the database to create the default sysadmin user:
+```bash
+$ npx prisma db seed
+```
+**Default Sysadmin Credentials:**
+- **Email**: `sysadmin@eclesiapp.com`
+- **Password**: `admin`
 
 ## Compile and run the project
 
