@@ -1,26 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { SignupCreateDto } from './dto/signup-create';
+import { PrismaService } from 'src/lib/prisma.service';
+import { ValidateEmailUsed } from './userCase/validateEmailused';
+import { CreateUser } from './userCase/createUser';
+import { CreateNewPerson } from './userCase/createPerson';
+import { throwError } from 'rxjs';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  constructor(private readonly prismaService: PrismaService) {}
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async signup(signupCreateDto: SignupCreateDto) : Promise<boolean> {
+    const validateEmailUsed = new ValidateEmailUsed();    
+    const emailUsed = await validateEmailUsed.execute(signupCreateDto.email);
+    if (emailUsed) {
+      throw new UserAlreadyExistsError('Já existe o cadastro com esse email.'); 
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    const personCreateUserCase = new CreateNewPerson();
+    const personCreated = personCreateUserCase.execute(signupCreateDto);
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    const userCreateUserCase = new CreateUser();
+    const userCreate = await userCreateUserCase.execute(signupCreateDto, 'string');
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    return true;
+  }  
+}
+
+// Define a custom business error class (optional, but good practice)
+export class UserAlreadyExistsError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'UserAlreadyExistsError';
   }
 }

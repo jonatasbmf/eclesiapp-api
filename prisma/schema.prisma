@@ -5,9 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider      = "prisma-client"
-  output        = "../generated/prisma"
-  moduleFormat  = "cjs"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -40,28 +40,28 @@ model OrganismCategory {
 }
 
 model Organism {
-  id             String           @id @default(uuid())
-  name           String
-  slug           String           // segmento do path
-  path           String           // MATERIALIZED PATH ex: BN.Estoril.Staff.Levi
-  depth          Int              // nível na hierarquia
-  isPhysical     Boolean          @default(false)
-  isCommercial   Boolean          @default(false) // setor comercial
-  cnpj           String?
-  tagTemplate    String?          // template da tag ex: BN:Estoril:Staff:Levi
+  id           String  @id @default(uuid())
+  name         String
+  slug         String // segmento do path
+  path         String // MATERIALIZED PATH ex: BN.Estoril.Staff.Levi
+  depth        Int // nível na hierarquia
+  isPhysical   Boolean @default(false)
+  isCommercial Boolean @default(false) // setor comercial
+  cnpj         String?
+  tagTemplate  String? // template da tag ex: BN:Estoril:Staff:Levi
 
   organizationId String
-  organization   Organization     @relation(fields: [organizationId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
 
-  categoryId     String
-  category       OrganismCategory @relation(fields: [categoryId], references: [id])
+  categoryId String
+  category   OrganismCategory @relation(fields: [categoryId], references: [id])
 
-  parentId       String?
-  parent         Organism?        @relation("OrganismTree", fields: [parentId], references: [id])
-  children       Organism[]       @relation("OrganismTree")
+  parentId String?
+  parent   Organism?  @relation("OrganismTree", fields: [parentId], references: [id])
+  children Organism[] @relation("OrganismTree")
 
-  addressId      String?
-  address        Address?         @relation(fields: [addressId], references: [id])
+  addressId String?
+  address   Address? @relation(fields: [addressId], references: [id])
 
   memberLinks    MemberOrganism[]
   eventOrganisms EventOrganism[]
@@ -69,10 +69,10 @@ model Organism {
   stocks         Stock[]
   financeTitles  FinanceTitle[]
 
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@index([path])          // índice para busca por path (evita recursão)
+  @@index([path]) // índice para busca por path (evita recursão)
   @@index([depth])
   @@index([organizationId])
   @@index([parentId])
@@ -126,17 +126,17 @@ model City {
 }
 
 model Person {
-  id        String      @id @default(uuid())
-  email     String?     @unique
+  id        String   @id @default(uuid())
+  email     String?  @unique
   phone     String?
   photoUrl  String?
   addressId String?
-  address   Address?    @relation(fields: [addressId], references: [id])
+  address   Address? @relation(fields: [addressId], references: [id])
 
-  individual   IndividualPerson?
-  company      CompanyPerson?
-  member       Member?
-  user         User?
+  individual IndividualPerson?
+  company    CompanyPerson?
+  member     Member?
+  user       User?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -145,14 +145,14 @@ model Person {
 }
 
 model IndividualPerson {
-  id           String    @id @default(uuid())
-  personId     String    @unique
-  person       Person    @relation(fields: [personId], references: [id])
-  firstName    String
-  lastName     String
-  cpf          String?   @unique
-  birthDate    DateTime?
-  gender       Gender?
+  id        String    @id @default(uuid())
+  personId  String    @unique
+  person    Person    @relation(fields: [personId], references: [id])
+  firstName String
+  lastName  String
+  cpf       String?   @unique
+  birthDate DateTime?
+  gender    Gender?
 }
 
 model CompanyPerson {
@@ -179,7 +179,7 @@ model Visitor {
   email     String?
   phone     String?
   notes     String?
-  unitId    String?  // unidade que visitou
+  unitId    String? // unidade que visitou
   visitedAt DateTime @default(now())
   createdAt DateTime @default(now())
 
@@ -191,23 +191,23 @@ model Visitor {
 // ─────────────────────────────────────────────
 
 model Member {
-  id               String           @id @default(uuid())
-  personId         String           @unique
-  person           Person           @relation(fields: [personId], references: [id])
-  enrollmentDate   DateTime?
-  ministerialRole  MinisterialRole?
-  status           MemberStatus     @default(ACTIVE)
+  id              String           @id @default(uuid())
+  personId        String           @unique
+  person          Person           @relation(fields: [personId], references: [id])
+  enrollmentDate  DateTime?
+  ministerialRole MinisterialRole?
+  status          MemberStatus     @default(ACTIVE)
 
-  organisms        MemberOrganism[]
-  tags             MemberTag[]
-  checkIns         EventCheckIn[]
+  organisms MemberOrganism[]
+  tags      MemberTag[]
+  checkIns  EventCheckIn[]
 
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum MemberStatus {
-  PENDING    // aguardando aprovação
+  PENDING // aguardando aprovação
   ACTIVE
   INACTIVE
   SUSPENDED
@@ -232,11 +232,11 @@ model MemberOrganism {
   member     Member   @relation(fields: [memberId], references: [id])
   organismId String
   organism   Organism @relation(fields: [organismId], references: [id])
-  role       String   // papel neste organismo específico
-  tag        String   // gerada automaticamente pelo path + role
+  role       String // papel neste organismo específico
+  tag        String // gerada automaticamente pelo path + role
 
-  joinedAt   DateTime @default(now())
-  leftAt     DateTime?
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime?
 
   @@unique([memberId, organismId, role])
   @@index([memberId])
@@ -259,17 +259,17 @@ model MemberTag {
 // ─────────────────────────────────────────────
 
 model User {
-  id            String          @id @default(uuid())
-  personId      String          @unique
-  person        Person          @relation(fields: [personId], references: [id])
-  username      String          @unique
-  passwordHash  String
-  isActive      Boolean         @default(true)
+  id           String  @id @default(uuid())
+  personId     String  @unique
+  person       Person  @relation(fields: [personId], references: [id])
+  email        String  @unique
+  passwordHash String
+  isActive     Boolean @default(true)
 
-  groups        UserGroup[]
+  groups UserGroup[]
 
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model PermissionGroup {
@@ -281,12 +281,12 @@ model PermissionGroup {
 }
 
 model PermissionItem {
-  id          String          @id @default(uuid())
-  groupId     String
-  group       PermissionGroup @relation(fields: [groupId], references: [id])
-  resource    String          // ex: "organisms", "members", "events"
-  action      String          // ex: "read", "write", "delete"
-  scope       String?         // ex: "own_unit", "all"
+  id       String          @id @default(uuid())
+  groupId  String
+  group    PermissionGroup @relation(fields: [groupId], references: [id])
+  resource String // ex: "organisms", "members", "events"
+  action   String // ex: "read", "write", "delete"
+  scope    String? // ex: "own_unit", "all"
 
   @@unique([groupId, resource, action])
   @@index([groupId])
@@ -312,24 +312,24 @@ model EventType {
 }
 
 model Event {
-  id           String          @id @default(uuid())
-  title        String
-  description  String?
-  typeId       String
-  type         EventType       @relation(fields: [typeId], references: [id])
-  scope        EventScope      @default(PUBLIC)
-  startDate    DateTime
-  endDate      DateTime?
-  organizerId  String          // memberId do organizador
-  unitId       String?         // organismo unidade (se restrito)
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  typeId      String
+  type        EventType  @relation(fields: [typeId], references: [id])
+  scope       EventScope @default(PUBLIC)
+  startDate   DateTime
+  endDate     DateTime?
+  organizerId String // memberId do organizador
+  unitId      String? // organismo unidade (se restrito)
 
   organisms    EventOrganism[]
   sectorEvents SectorEvent[]
   checkIns     EventCheckIn[]
   sales        Sale[]
 
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([startDate])
   @@index([unitId])
@@ -347,7 +347,7 @@ model EventOrganism {
   event      Event    @relation(fields: [eventId], references: [id])
   organismId String
   organism   Organism @relation(fields: [organismId], references: [id])
-  role       String?  // louvor, intercessão, consolidação...
+  role       String? // louvor, intercessão, consolidação...
 
   @@unique([eventId, organismId])
   @@index([eventId])
@@ -359,7 +359,7 @@ model EventCheckIn {
   event     Event    @relation(fields: [eventId], references: [id])
   memberId  String
   member    Member   @relation(fields: [memberId], references: [id])
-  role      String?  // papel no evento
+  role      String? // papel no evento
   checkedAt DateTime @default(now())
 
   @@unique([eventId, memberId])
@@ -376,7 +376,7 @@ model SectorEvent {
   id         String              @id @default(uuid())
   eventId    String
   event      Event               @relation(fields: [eventId], references: [id])
-  organismId String              // organismo do tipo setor
+  organismId String // organismo do tipo setor
   organism   Organism            @relation(fields: [organismId], references: [id])
   persons    SectorEventPerson[]
   sales      Sale[]
@@ -400,7 +400,7 @@ model SectorEventPerson {
 // ─────────────────────────────────────────────
 
 model MaterialCategory {
-  id        String     @id @default(uuid())
+  id        String             @id @default(uuid())
   name      String
   parentId  String?
   parent    MaterialCategory?  @relation("MatCatTree", fields: [parentId], references: [id])
@@ -409,10 +409,10 @@ model MaterialCategory {
 }
 
 model UnitOfMeasure {
-  id          String             @id @default(uuid())
-  name        String             @unique // unidade, caixa, kg, litro
-  symbol      String             @unique
-  conversions UnitConversion[]   @relation("FromUnit")
+  id          String           @id @default(uuid())
+  name        String           @unique // unidade, caixa, kg, litro
+  symbol      String           @unique
+  conversions UnitConversion[] @relation("FromUnit")
   materials   Material[]
 }
 
@@ -421,25 +421,25 @@ model UnitConversion {
   fromUnitId String
   fromUnit   UnitOfMeasure @relation("FromUnit", fields: [fromUnitId], references: [id])
   toUnitId   String
-  factor     Decimal       // ex: 1 caixa = 12 unidades
+  factor     Decimal // ex: 1 caixa = 12 unidades
 
   @@unique([fromUnitId, toUnitId])
 }
 
 model Material {
-  id           String           @id @default(uuid())
-  name         String
-  description  String?
-  sku          String?          @unique
-  categoryId   String
-  category     MaterialCategory @relation(fields: [categoryId], references: [id])
-  unitId       String
-  unit         UnitOfMeasure    @relation(fields: [unitId], references: [id])
-  salePrice    Decimal?
-  costPrice    Decimal?
+  id          String           @id @default(uuid())
+  name        String
+  description String?
+  sku         String?          @unique
+  categoryId  String
+  category    MaterialCategory @relation(fields: [categoryId], references: [id])
+  unitId      String
+  unit        UnitOfMeasure    @relation(fields: [unitId], references: [id])
+  salePrice   Decimal?
+  costPrice   Decimal?
 
-  stocks       Stock[]
-  saleItems    SaleItem[]
+  stocks        Stock[]
+  saleItems     SaleItem[]
   purchaseItems PurchaseItem[]
 }
 
@@ -447,25 +447,25 @@ model Stock {
   id         String   @id @default(uuid())
   materialId String
   material   Material @relation(fields: [materialId], references: [id])
-  organismId String   // setor dono do estoque
+  organismId String // setor dono do estoque
   organism   Organism @relation(fields: [organismId], references: [id])
   quantity   Decimal  @default(0)
 
-  movements  StockMovement[]
+  movements StockMovement[]
 
   @@unique([materialId, organismId])
   @@index([organismId])
 }
 
 model StockMovement {
-  id          String        @id @default(uuid())
+  id          String       @id @default(uuid())
   stockId     String
-  stock       Stock         @relation(fields: [stockId], references: [id])
+  stock       Stock        @relation(fields: [stockId], references: [id])
   type        MovementType
   quantity    Decimal
   reason      String?
-  performedBy String?       // memberId
-  createdAt   DateTime      @default(now())
+  performedBy String? // memberId
+  createdAt   DateTime     @default(now())
 
   @@index([stockId])
 }
@@ -478,9 +478,9 @@ enum MovementType {
 
 model PurchaseOrder {
   id          String         @id @default(uuid())
-  organismId  String         // setor solicitante
+  organismId  String // setor solicitante
   status      PurchaseStatus @default(DRAFT)
-  requestedBy String         // memberId
+  requestedBy String // memberId
   items       PurchaseItem[]
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
@@ -509,18 +509,18 @@ model PurchaseItem {
 // ─────────────────────────────────────────────
 
 model Sale {
-  id            String      @id @default(uuid())
+  id            String        @id @default(uuid())
   eventId       String
-  event         Event       @relation(fields: [eventId], references: [id])
+  event         Event         @relation(fields: [eventId], references: [id])
   sectorEventId String
-  sectorEvent   SectorEvent @relation(fields: [sectorEventId], references: [id])
-  sellerId      String      // memberId do vendedor
-  buyerPersonId String?     // pessoa compradora (opcional)
+  sectorEvent   SectorEvent   @relation(fields: [sectorEventId], references: [id])
+  sellerId      String // memberId do vendedor
+  buyerPersonId String? // pessoa compradora (opcional)
   total         Decimal
-  status        SaleStatus  @default(OPEN)
+  status        SaleStatus    @default(OPEN)
   items         SaleItem[]
   payments      SalePayment[]
-  createdAt     DateTime    @default(now())
+  createdAt     DateTime      @default(now())
 
   @@index([eventId])
   @@index([sectorEventId])
@@ -545,12 +545,12 @@ model SaleItem {
 }
 
 model SalePayment {
-  id        String      @id @default(uuid())
-  saleId    String
-  sale      Sale        @relation(fields: [saleId], references: [id])
-  method    PaymentMethod
-  amount    Decimal
-  paidAt    DateTime    @default(now())
+  id     String        @id @default(uuid())
+  saleId String
+  sale   Sale          @relation(fields: [saleId], references: [id])
+  method PaymentMethod
+  amount Decimal
+  paidAt DateTime      @default(now())
 }
 
 enum PaymentMethod {
@@ -566,18 +566,18 @@ enum PaymentMethod {
 // ─────────────────────────────────────────────
 
 model FinanceTitle {
-  id          String        @id @default(uuid())
+  id          String      @id @default(uuid())
   type        TitleType
   description String
   amount      Decimal
   dueDate     DateTime
   paidAt      DateTime?
-  status      TitleStatus   @default(OPEN)
-  organismId  String        // unidade fiscal responsável
-  organism    Organism      @relation(fields: [organismId], references: [id])
-  supplierId  String?       // personId
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  status      TitleStatus @default(OPEN)
+  organismId  String // unidade fiscal responsável
+  organism    Organism    @relation(fields: [organismId], references: [id])
+  supplierId  String? // personId
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   @@index([organismId])
   @@index([dueDate])
